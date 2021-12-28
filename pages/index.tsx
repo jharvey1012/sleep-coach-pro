@@ -4,6 +4,7 @@ import Image from 'next/image';
 import styles from '../styles/Home.module.scss';
 import Layout from '../components/Layout/Layout';
 import Footer from '../components/Footer/Footer';
+import ClientList from '../components/ClientList/ClientList';
 
 const Home: NextPage = () => {
   return (
@@ -20,6 +21,7 @@ const Home: NextPage = () => {
             Welcome to Eight Sleep Sleep Coach Pro!
           </h1>
           <p>The premier app for helping your clients improve their sleep</p>
+        <ClientList />
         </main>
         <Footer />
       </div>

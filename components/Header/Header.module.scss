@@ -1,0 +1,36 @@
+@import '../../styles/colors.scss';
+
+.navbar {
+    padding: 0.5rem;
+    background-color: $brand-dark-primary;
+    display: flex;
+    justify-content: space-between;
+    ul {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        
+        li {
+            color: $brand-light-primary;
+            display: inline;
+            padding-right: 1.25rem;
+        }
+    }
+}
+
+.navRight {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    ul {
+        margin-right: 1rem;
+    }
+
+    img {
+        height: 44px;
+        width: 44px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+}

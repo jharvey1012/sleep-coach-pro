@@ -2,12 +2,6 @@ import { ReactChild, ReactFragment, ReactPortal } from "react";
 import styles from './ClientCard.module.scss';
 import Link from 'next/link';
 
-
-interface Props {
-  name: string;
-  avatarUrl: string
-}
-
 const ClientCard = (props: { 
   id: number,
   name: string,

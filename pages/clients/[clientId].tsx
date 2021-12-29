@@ -174,7 +174,7 @@ const Client: NextPage = () => {
 
         let sleepScoreSum = 0;
         seriesData = []
-        console.log("Unformatted Data");
+      
         unformattedData.intervals.map((interval: any) => {
           sleepScoreSum += interval.score;
           let sumsOfStoredDurations: {
@@ -218,8 +218,6 @@ const Client: NextPage = () => {
           });
         })
         setClient(clientData)
-        console.log("Total Client Data");
-        console.log(clientData);
       }
     })
 
@@ -305,15 +303,11 @@ const Client: NextPage = () => {
               onDecrementDate={() => {
                 const numberOfIntervals = client.sleepStageData.deep.length;
                 let dateIndex = sleepStageDateSelectorIndex > 1 ? sleepStageDateSelectorIndex - 1 : numberOfIntervals - 1;
-                console.log("DECREMENTING");
-                console.log(dateIndex);
                 setSleepStageDateSelectorIndex(dateIndex);
               } }
               onIncrementDate={() => {
                 const numberOfIntervals = client.sleepStageData.deep.length;
                 let dateIndex = sleepStageDateSelectorIndex < numberOfIntervals - 1 ? sleepStageDateSelectorIndex + 1 : 0;
-                console.log("INCREMENTING");
-                console.log(dateIndex);
                 setSleepStageDateSelectorIndex(dateIndex);
               } }
               data={[

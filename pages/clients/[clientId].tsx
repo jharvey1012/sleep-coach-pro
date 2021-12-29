@@ -18,6 +18,7 @@ const Client: NextPage = () => {
   const router = useRouter()
   const { clientId } = router.query
   const [client, setClient] = useState<any>({});
+  const [avgSleepScore, setAvgSleepScore] = useState<any>(0);
   const [sleepStageDateSelectorIndex, setSleepStageDateSelectorIndex] = useState(0);
   const [chartType, setChartType] = useState<any>('timeSeries');
   const [hiddenTimeSeries, setHiddenTimeSeries] = useState<Array<object>>([{
@@ -171,10 +172,11 @@ const Client: NextPage = () => {
         })
 
 
-
+        let sleepScoreSum = 0;
         seriesData = []
         console.log("Unformatted Data");
         unformattedData.intervals.map((interval: any) => {
+          sleepScoreSum += interval.score;
           let sumsOfStoredDurations: {
             [key: string]: number,
           }
@@ -188,8 +190,7 @@ const Client: NextPage = () => {
             sumsOfStoredDurations[stage.stage] += Math.floor(stage.duration / 60)
           })
           
-          console.log("SUMMED STAGE DURATIONS");
-          console.log(sumsOfStoredDurations);
+          setAvgSleepScore((sleepScoreSum/unformattedData.intervals.length).toFixed(2))
     
           clientData.sleepStageData.deep.push({
             id: "deep",
@@ -238,7 +239,7 @@ const Client: NextPage = () => {
           </div>
           <div className={styles.sleepScoreInfoContainer}>
             <h4> Average Sleep Score </h4>
-            <h1>74</h1>
+            <h1>{avgSleepScore}</h1>
           </div>
         </div>
         <div className={styles.chartSelector}>

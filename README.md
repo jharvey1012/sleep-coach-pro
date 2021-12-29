@@ -1,6 +1,31 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+
+# Run Using Docker
+If you have docker installed you can simply navigate to the project directory and run
+```
+ docker-compose build && docker-compose up
+```
+and it will start the project at localhost:3000
+
+
+# Running The Development Environment
+## Make sure you have node/npm installed
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+
+nvm install node
+```
+
+## Install Dependencies
+```
+npm install
+```
+
+## Getting Started Running the Dev Server
 
 First, run the development server:
 

@@ -49,7 +49,6 @@ const Client: NextPage = () => {
     }    
   ])
 
-  // Similar to componentDidMount and componentDidUpdate:
   useEffect(() => {
     if(!router.isReady) return;
     formatTimeSeriesData()
@@ -93,8 +92,6 @@ const Client: NextPage = () => {
           }
         };
 
-
-        // Need to format chat data
 
         const unformattedData =  await fetchSleepData(fakeClient.dataUrl);
         let seriesData = []
@@ -143,8 +140,7 @@ const Client: NextPage = () => {
         })
         sleepScoreSeriesData = sleepScoreSeriesData.reverse()
 
-        // let sleepScoreSeriesData = [...Object.keys(xAxisDisplayedDates).map((key) => ({ x: key, y: 75}))]
-
+        // Push all the series data to the chart
         clientData.data.push({
           id: `Room Temp`,
           color: "hsl(144, 70%, 50%)",
@@ -171,10 +167,9 @@ const Client: NextPage = () => {
           data: sleepScoreSeriesData
         })
 
-
+        // Format Sleep Stage Data
         let sleepScoreSum = 0;
         seriesData = []
-      
         unformattedData.intervals.map((interval: any) => {
           sleepScoreSum += interval.score;
           let sumsOfStoredDurations: {
@@ -192,6 +187,7 @@ const Client: NextPage = () => {
           
           setAvgSleepScore((sleepScoreSum/unformattedData.intervals.length).toFixed(2))
     
+          // Push Sleep Stage data to the chart
           clientData.sleepStageData.deep.push({
             id: "deep",
             label: "Deep Sleep",
@@ -220,8 +216,6 @@ const Client: NextPage = () => {
         setClient(clientData)
       }
     })
-
-
   }
 
   return (
@@ -286,7 +280,6 @@ const Client: NextPage = () => {
                   }
                   return timeSeries.id === seriesLabel;
                 })
-
                 data = [...client.data, ...dataToAddBack]
               }
 

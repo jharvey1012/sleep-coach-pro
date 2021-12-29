@@ -10,7 +10,12 @@ const Footer = () => (
     >
       Powered by{' '}
       <span className={styles.logo}>
-        <img src="https://eightsleep.dexecure.net/s/files/1/1354/6123/files/Logo_White.svg?10878386720812330155" alt="Eight Sleep Logo" loading="lazy" className="Img_img__1HXDs"></img>
+        <img 
+          src="https://eightsleep.dexecure.net/s/files/1/1354/6123/files/Logo_White.svg?10878386720812330155"
+          alt="Eight Sleep Logo" 
+          loading="lazy" 
+          className="Img_img__1HXDs" 
+        />
       </span>
     </a>
   </footer>

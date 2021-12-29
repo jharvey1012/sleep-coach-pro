@@ -1,6 +1,10 @@
 import styles from './Checkbox.module.scss';
 
-const Checkbox = (props: {label: string, isChecked: boolean, onClick: Function}) => (
+const Checkbox = (props: {
+    label: string,
+    isChecked: boolean,
+    onClick: Function
+}) => (
     <div className={styles.checkbox}>
         <div className="pretty p-switch p-fill">
             <input 

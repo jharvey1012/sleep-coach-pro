@@ -3,17 +3,22 @@ import { useRouter } from 'next/router'
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
+import moment from 'moment';
+import { time } from 'console';
+import Button from '../../components/Button/Button';
+import PieChart from '../../components/PieChart/PieChart';
 import styles from '../../styles/Client.module.scss';
 import Layout from '../../components/Layout/Layout';
 import Footer from '../../components/Footer/Footer';
 import fakeClientsList from '../../clients.json';
-import moment from 'moment';
 import TimeSeriesChart from '../../components/TimeSeriesChart/TimeSeriesChart';
-import { time } from 'console';
-import Button from '../../components/Button/Button';
+
 
 const Client: NextPage = () => {
+  const router = useRouter()
+  const { clientId } = router.query
   const [client, setClient] = useState<any>({});
+  const [sleepStageDateSelectorIndex, setSleepStageDateSelectorIndex] = useState(0);
   const [chartType, setChartType] = useState<any>('timeSeries');
   const [hiddenTimeSeries, setHiddenTimeSeries] = useState<Array<object>>([{
     id: Number,
@@ -42,31 +47,40 @@ const Client: NextPage = () => {
       isChecked: true
     }    
   ])
-  const router = useRouter()
-  const { clientId } = router.query
 
   // Similar to componentDidMount and componentDidUpdate:
   useEffect(() => {
     if(!router.isReady) return;
-    async function fetchSleepData(s3Url: string) : Promise<object> {
-      let response = await fetch(s3Url);
-      const data = await response.json();
-      return data
-    }
+    formatTimeSeriesData()
+  }, [router.isReady]);
 
+  const fetchSleepData = async (s3Url: string) : Promise<object>  => {
+    let response = await fetch(s3Url);
+    const data = await response.json();
+    return data
+  }
+
+  const formatTimeSeriesData = () => {
     let clientData: {
       id: number,
       name: string,
       avatarUrl: string,
       dataUrl: string,
-      data: Array<object>
+      data: Array<object>,
+      sleepStageData: Array<object>
     }
 
     fakeClientsList.map(async (fakeClient) => {
       if(fakeClient.id == clientId! as unknown) {
         clientData = {
           ...fakeClient,
-          data: []
+          data: [],
+          sleepStageData: {
+            deep: [],
+            out: [],
+            light: [],
+            awake: []
+          }
         };
 
 
@@ -105,8 +119,6 @@ const Client: NextPage = () => {
         // Map Each Time Key To The Value At The Closest Time We Have For That
         let sleepScoreSeriesData = Object.keys(xAxisDisplayedDates).map((key, index) => {
           // What is the appropriate timeseries to associate this key with?
-          console.log("Setting Sleep Score");
-          console.log(unformattedData.intervals[Math.floor(index / 10)].score)
           return {x: key, y: reversedIntervals[Math.floor(index / 10)].score}
         })
         sleepScoreSeriesData = sleepScoreSeriesData.reverse()
@@ -139,10 +151,115 @@ const Client: NextPage = () => {
           data: sleepScoreSeriesData
         })
 
+
+
+        seriesData = []
+        console.log("Unformatted Data");
+        unformattedData.intervals.map((interval: object) => {
+          let sumsOfStoredDurations = {
+            awake: 0,
+            out: 0,
+            light: 0,
+            deep: 0
+          }
+          const timeseriesData = interval.stages.map((stage: Array<any>) => {
+            sumsOfStoredDurations[stage.stage] += Math.floor(stage.duration / 60)
+          })
+          
+          console.log("SUMMED STAGE DURATIONS");
+          console.log(sumsOfStoredDurations);
+    
+          clientData.sleepStageData.deep.push({
+            id: "deep",
+            label: "Deep Sleep",
+            value: sumsOfStoredDurations.deep,
+            interval: interval.ts
+          });
+          clientData.sleepStageData.out.push({
+            id: "out",
+            label: "Out Of Bed",
+            value: sumsOfStoredDurations.out,
+            interval: interval.ts
+          });
+          clientData.sleepStageData.awake.push({
+            id: "awake",
+            label: "Awake",
+            value: sumsOfStoredDurations.awake,
+            interval: interval.ts
+          });
+          clientData.sleepStageData.light.push({
+            id: "light",
+            label: "Light",
+            value: sumsOfStoredDurations.light,
+            interval: interval.ts
+          });
+        })
         setClient(clientData)
+        console.log("Total Client Data");
+        console.log(clientData);
       }
     })
-  }, [router.isReady]);
+
+
+  }
+
+  const formatPieChartData = async () => {
+    let clientData: {
+      id: number,
+      name: string,
+      avatarUrl: string,
+      dataUrl: string,
+      data: Array<object>,
+      sleepStageData: Array<object>
+    }
+
+        clientData = {
+          ...client,
+          sleepStageData: {
+            deep: [],
+            out: [],
+            light: [],
+            awake: []
+          }
+        };
+        
+        // Need to format chat data
+
+        const unformattedData =  await fetchSleepData(client.dataUrl);
+        let seriesData = []
+
+        console.log("Unformatted Data");
+        unformattedData.intervals.map((interval: object) => {
+          let sumsOfStoredDurations = {
+            awake: 0,
+            out: 0,
+            light: 0,
+            deep: 0
+          }
+          const timeseriesData = interval.stages.map((stage: Array<any>) => {
+            sumsOfStoredDurations[stage.stage] += Math.floor(stage.duration / 60)
+          })
+          
+          console.log("SUMMED STAGE DURATIONS");
+          console.log(sumsOfStoredDurations);
+
+          clientData.sleepStageData.deep.push({
+            id: "deep",
+            label: "Deep Sleep",
+            value: sumsOfStoredDurations.deep
+          });
+        })
+
+        console.log("Before setting, client is:");
+        console.log(client);
+        console.log(clientData);
+
+        // setClient(client)
+
+
+  }
+    
+
 
   return (
     <Layout>
@@ -216,6 +333,30 @@ const Client: NextPage = () => {
               });
             }}
             controls={controls}
+          />
+        )}
+        {chartType === 'stages' && (
+          <PieChart 
+            onDecrementDate={() => {
+              const numberOfIntervals = client.sleepStageData.deep.length;
+              let dateIndex = sleepStageDateSelectorIndex > 1 ? sleepStageDateSelectorIndex - 1 : numberOfIntervals - 1;
+              console.log("DECREMENTING");
+              console.log(dateIndex);
+              setSleepStageDateSelectorIndex(dateIndex)
+            }}a
+            onIncrementDate={() => {
+              const numberOfIntervals = client.sleepStageData.deep.length;
+              let dateIndex = sleepStageDateSelectorIndex < numberOfIntervals - 1 ? sleepStageDateSelectorIndex + 1 : 0;
+              console.log("INCREMENTING");
+              console.log(dateIndex);
+              setSleepStageDateSelectorIndex(dateIndex)
+            }}
+            data={[
+              client.sleepStageData.deep[sleepStageDateSelectorIndex],
+              client.sleepStageData.light[sleepStageDateSelectorIndex],
+              client.sleepStageData.out[sleepStageDateSelectorIndex],
+              client.sleepStageData.awake[sleepStageDateSelectorIndex]]
+            }
           />
         )}
       </div>

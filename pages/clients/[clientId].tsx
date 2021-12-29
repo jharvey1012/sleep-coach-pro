@@ -25,7 +25,7 @@ const Client: NextPage = () => {
     color: String,
     data: Array
   }])
-  const [controls, setControls] = useState<Array<object>>([
+  const [controls, setControls] = useState<Array<any>>([
     {
       label: "Heart Rate",
       isChecked: true
@@ -54,21 +54,30 @@ const Client: NextPage = () => {
     formatTimeSeriesData()
   }, [router.isReady]);
 
-  const fetchSleepData = async (s3Url: string) : Promise<object>  => {
+  const fetchSleepData = async (s3Url: string) : Promise<any>  => {
     let response = await fetch(s3Url);
     const data = await response.json();
     return data
   }
 
   const formatTimeSeriesData = () => {
+    let sleepStageData: {
+      deep: Array<object>,
+      out: Array<object>,
+      light: Array<object>
+      awake: Array<object>
+    }
+
+
     let clientData: {
       id: number,
       name: string,
       avatarUrl: string,
       dataUrl: string,
       data: Array<object>,
-      sleepStageData: Array<object>
+      sleepStageData: any
     }
+
 
     fakeClientsList.map(async (fakeClient) => {
       if(fakeClient.id == clientId! as unknown) {
@@ -89,13 +98,20 @@ const Client: NextPage = () => {
         const unformattedData =  await fetchSleepData(fakeClient.dataUrl);
         let seriesData = []
 
-        const formatSeriesData = (unformattedData: object, propertyName: string) => {
-          let seriesData = [];
-          unformattedData.intervals.map((interval: object) => {
+        const formatSeriesData = (unformattedData: any, propertyName: string) => {
+          let seriesData: any[] = [];
+          unformattedData.intervals.map((interval: any) => {
             let dataToIterateOver = interval.timeseries[propertyName];
             const timeseriesData = dataToIterateOver.map((dataPoint: Array<any>) => {
-              const formattedData = {};
-              formattedData.x = moment(dataPoint[0]).format('M/D h:mma'),
+              let formattedData: {
+                x: string,
+                y: number
+              }
+              formattedData = {
+                x: '',
+                y: 0
+              };
+              formattedData.x = moment(dataPoint[0]).format('M/D h:mma');
               formattedData.y = dataPoint[1].toFixed(2)
               return formattedData
             })
@@ -110,7 +126,10 @@ const Client: NextPage = () => {
         let respRateSeriesData = formatSeriesData(unformattedData, 'respiratoryRate');
         let heartRateSeriesData = formatSeriesData(unformattedData, 'heartRate');
 
-        let xAxisDisplayedDates = {};
+        let xAxisDisplayedDates: {
+           [prop: string]: boolean;  
+        };
+        xAxisDisplayedDates = {};
         bedTempSeriesData.map((dataPoint) => {
           xAxisDisplayedDates[dataPoint.x] = true;
         })
@@ -155,14 +174,17 @@ const Client: NextPage = () => {
 
         seriesData = []
         console.log("Unformatted Data");
-        unformattedData.intervals.map((interval: object) => {
-          let sumsOfStoredDurations = {
+        unformattedData.intervals.map((interval: any) => {
+          let sumsOfStoredDurations: {
+            [key: string]: number,
+          }
+          sumsOfStoredDurations = {
             awake: 0,
             out: 0,
             light: 0,
             deep: 0
           }
-          const timeseriesData = interval.stages.map((stage: Array<any>) => {
+          const timeseriesData = interval.stages.map((stage: { stage: string, duration: number}) => {
             sumsOfStoredDurations[stage.stage] += Math.floor(stage.duration / 60)
           })
           
@@ -203,64 +225,6 @@ const Client: NextPage = () => {
 
   }
 
-  const formatPieChartData = async () => {
-    let clientData: {
-      id: number,
-      name: string,
-      avatarUrl: string,
-      dataUrl: string,
-      data: Array<object>,
-      sleepStageData: Array<object>
-    }
-
-        clientData = {
-          ...client,
-          sleepStageData: {
-            deep: [],
-            out: [],
-            light: [],
-            awake: []
-          }
-        };
-        
-        // Need to format chat data
-
-        const unformattedData =  await fetchSleepData(client.dataUrl);
-        let seriesData = []
-
-        console.log("Unformatted Data");
-        unformattedData.intervals.map((interval: object) => {
-          let sumsOfStoredDurations = {
-            awake: 0,
-            out: 0,
-            light: 0,
-            deep: 0
-          }
-          const timeseriesData = interval.stages.map((stage: Array<any>) => {
-            sumsOfStoredDurations[stage.stage] += Math.floor(stage.duration / 60)
-          })
-          
-          console.log("SUMMED STAGE DURATIONS");
-          console.log(sumsOfStoredDurations);
-
-          clientData.sleepStageData.deep.push({
-            id: "deep",
-            label: "Deep Sleep",
-            value: sumsOfStoredDurations.deep
-          });
-        })
-
-        console.log("Before setting, client is:");
-        console.log(client);
-        console.log(clientData);
-
-        // setClient(client)
-
-
-  }
-    
-
-
   return (
     <Layout>
       <div className={styles.container}>
@@ -293,7 +257,7 @@ const Client: NextPage = () => {
         {client.data && chartType === 'timeSeries' && (
           <TimeSeriesChart 
             data={client.data}
-            onToggleSeries={(seriesLabel) => {
+            onToggleSeries={(seriesLabel: string) => {
               let hasSetUnchecked = null;
               setControls(controls.map((control) => {
                 if(control.label === seriesLabel) {
@@ -305,7 +269,7 @@ const Client: NextPage = () => {
 
               let data;
               if(hasSetUnchecked) { // Off
-                data = client.data.filter((timeSeries) => {
+                data = client.data.filter((timeSeries: any) => {
                   if(timeSeries.id === seriesLabel) {
                     setHiddenTimeSeries([
                       ...hiddenTimeSeries,
@@ -315,9 +279,9 @@ const Client: NextPage = () => {
                   return timeSeries.id !== seriesLabel
                 })
               } else { // And back on
-                let dataToAddBack = hiddenTimeSeries.filter((timeSeries) => {
+                let dataToAddBack = hiddenTimeSeries.filter((timeSeries: any) => {
                   if(timeSeries.id === seriesLabel) {
-                    setHiddenTimeSeries(hiddenTimeSeries.filter((hiddenTimeSeries) => {
+                    setHiddenTimeSeries(hiddenTimeSeries.filter((hiddenTimeSeries: any) => {
                       return hiddenTimeSeries.id !== seriesLabel
                     }))
                   }
@@ -337,27 +301,28 @@ const Client: NextPage = () => {
         )}
         {chartType === 'stages' && (
           <PieChart 
-            onDecrementDate={() => {
-              const numberOfIntervals = client.sleepStageData.deep.length;
-              let dateIndex = sleepStageDateSelectorIndex > 1 ? sleepStageDateSelectorIndex - 1 : numberOfIntervals - 1;
-              console.log("DECREMENTING");
-              console.log(dateIndex);
-              setSleepStageDateSelectorIndex(dateIndex)
-            }}a
-            onIncrementDate={() => {
-              const numberOfIntervals = client.sleepStageData.deep.length;
-              let dateIndex = sleepStageDateSelectorIndex < numberOfIntervals - 1 ? sleepStageDateSelectorIndex + 1 : 0;
-              console.log("INCREMENTING");
-              console.log(dateIndex);
-              setSleepStageDateSelectorIndex(dateIndex)
-            }}
-            data={[
-              client.sleepStageData.deep[sleepStageDateSelectorIndex],
-              client.sleepStageData.light[sleepStageDateSelectorIndex],
-              client.sleepStageData.out[sleepStageDateSelectorIndex],
-              client.sleepStageData.awake[sleepStageDateSelectorIndex]]
-            }
-          />
+              onDecrementDate={() => {
+                const numberOfIntervals = client.sleepStageData.deep.length;
+                let dateIndex = sleepStageDateSelectorIndex > 1 ? sleepStageDateSelectorIndex - 1 : numberOfIntervals - 1;
+                console.log("DECREMENTING");
+                console.log(dateIndex);
+                setSleepStageDateSelectorIndex(dateIndex);
+              } }
+              onIncrementDate={() => {
+                const numberOfIntervals = client.sleepStageData.deep.length;
+                let dateIndex = sleepStageDateSelectorIndex < numberOfIntervals - 1 ? sleepStageDateSelectorIndex + 1 : 0;
+                console.log("INCREMENTING");
+                console.log(dateIndex);
+                setSleepStageDateSelectorIndex(dateIndex);
+              } }
+              data={[
+                client.sleepStageData.deep[sleepStageDateSelectorIndex],
+                client.sleepStageData.light[sleepStageDateSelectorIndex],
+                client.sleepStageData.out[sleepStageDateSelectorIndex],
+                client.sleepStageData.awake[sleepStageDateSelectorIndex]
+              ]} 
+              controls={[]}          
+            />
         )}
       </div>
     </Layout>

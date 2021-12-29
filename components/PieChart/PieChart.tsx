@@ -37,7 +37,7 @@ const testData = [
     }
   ]
 
-const PieChart = (props: { data: Array<object>, controls: Array<object>, onDecrementDate: Function, onIncrementDate: Function }) => (
+const PieChart = (props: { data: Array<any>, controls: Array<object>, onDecrementDate: Function, onIncrementDate: Function }) => (
     <div className={styles.chartContainer}>
         <div className={styles.controlsContainer}>
             <h1> Minutes Spent In Each Sleep Stage </h1>

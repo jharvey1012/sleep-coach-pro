@@ -3,13 +3,14 @@ import { ResponsiveLine } from '@nivo/line';
 import styles from './TimeSeriesChart.module.scss';
 import Checkbox from '../Checkbox/Checkbox';
 
-const TimeSeriesChart = (props: { data: Array<object>, controls: Array<object>, onToggleSeries: Function }) => (
+const TimeSeriesChart = (props: { data: Array<any>, controls: Array<any>, onToggleSeries: Function }) => (
     <div className={styles.chartContainer}>
         <div className={styles.controlsContainer}>
-            <h1> Sleep Quality Data 03/07-03/10 </h1>
+            <h1> Sleep Quality Data 03/06-03/10 </h1>
             <div className={styles.controls}>
                 {props.controls.map(control => (
                     <Checkbox 
+                        key={control.label}
                         label={control.label}
                         isChecked={control.isChecked}
                         onClick={() => props.onToggleSeries(control.label)}
@@ -18,19 +19,17 @@ const TimeSeriesChart = (props: { data: Array<object>, controls: Array<object>, 
             </div>
         </div>
         <ResponsiveLine
-        data={props.data}
-        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-        axisBottom={{
-            orient: 'bottom',
+          data={props.data}
+          margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+          axisBottom={{
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
             legend: 'Date',
             legendOffset: 36,
             legendPosition: 'middle'
-        }}
+          }}
         axisLeft={{
-            orient: 'left',
             tickSize: 1,
             tickPadding: 5,
             tickRotation: 0,

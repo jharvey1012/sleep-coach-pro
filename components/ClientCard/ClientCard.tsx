@@ -7,7 +7,7 @@ const ClientCard = (props: {
   name: string,
   avatarUrl: string
 }) => (
-    <div className={styles.grid}>
+  <div className={styles.grid}>
     <Link href={`/clients/${props.id}`}>
       <a href="https://nextjs.org/docs" className={styles.card}>
         <div className={styles.avatarContainer}>

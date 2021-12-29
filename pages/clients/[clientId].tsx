@@ -10,9 +10,11 @@ import fakeClientsList from '../../clients.json';
 import moment from 'moment';
 import TimeSeriesChart from '../../components/TimeSeriesChart/TimeSeriesChart';
 import { time } from 'console';
+import Button from '../../components/Button/Button';
 
 const Client: NextPage = () => {
   const [client, setClient] = useState<any>({});
+  const [chartType, setChartType] = useState<any>('timeSeries');
   const [hiddenTimeSeries, setHiddenTimeSeries] = useState<Array<object>>([{
     id: Number,
     color: String,
@@ -34,7 +36,11 @@ const Client: NextPage = () => {
     {
       label: "Room Temp",
       isChecked: true
-    }
+    },
+    {
+      label: "Sleep Score",
+      isChecked: true
+    }    
   ])
   const router = useRouter()
   const { clientId } = router.query
@@ -90,6 +96,23 @@ const Client: NextPage = () => {
         let respRateSeriesData = formatSeriesData(unformattedData, 'respiratoryRate');
         let heartRateSeriesData = formatSeriesData(unformattedData, 'heartRate');
 
+        let xAxisDisplayedDates = {};
+        bedTempSeriesData.map((dataPoint) => {
+          xAxisDisplayedDates[dataPoint.x] = true;
+        })
+
+        let reversedIntervals = unformattedData.intervals.reverse()
+        // Map Each Time Key To The Value At The Closest Time We Have For That
+        let sleepScoreSeriesData = Object.keys(xAxisDisplayedDates).map((key, index) => {
+          // What is the appropriate timeseries to associate this key with?
+          console.log("Setting Sleep Score");
+          console.log(unformattedData.intervals[Math.floor(index / 10)].score)
+          return {x: key, y: reversedIntervals[Math.floor(index / 10)].score}
+        })
+        sleepScoreSeriesData = sleepScoreSeriesData.reverse()
+
+        // let sleepScoreSeriesData = [...Object.keys(xAxisDisplayedDates).map((key) => ({ x: key, y: 75}))]
+
         clientData.data.push({
           id: `Room Temp`,
           color: "hsl(144, 70%, 50%)",
@@ -110,6 +133,11 @@ const Client: NextPage = () => {
           color: "hsl(144, 70%, 50%)",
           data: heartRateSeriesData
         })
+        clientData.data.push({
+          id: `Sleep Score`,
+          color: "hsl(144, 70%, 50%)",
+          data: sleepScoreSeriesData
+        })
 
         setClient(clientData)
       }
@@ -119,8 +147,33 @@ const Client: NextPage = () => {
   return (
     <Layout>
       <div className={styles.container}>
+        <div className={styles.clientBasicInfo}>
+          <div className={styles.nameAndPhotoContainer}>
+            <img 
+              className={styles.avatar}
+              src={client.avatarUrl} 
+            />
+            <h1> {client.name} </h1>
+          </div>
+          <div className={styles.sleepScoreInfoContainer}>
+            <h4> Average Sleep Score </h4>
+            <h1>74</h1>
+          </div>
+        </div>
+        <div className={styles.chartSelector}>
+          <Button 
+            onClick={() => setChartType('timeSeries')}
+          >
+            Time Series Data
+          </Button>
+          <Button 
+            onClick={() => setChartType('stages')}
+          >
+            Sleep Stages
+          </Button>
+        </div>
         {/* Show all the basic timeseries data */}
-        {client.data &&(
+        {client.data && chartType === 'timeSeries' && (
           <TimeSeriesChart 
             data={client.data}
             onToggleSeries={(seriesLabel) => {

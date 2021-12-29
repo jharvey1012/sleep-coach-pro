@@ -1,0 +1,28 @@
+@import '../../styles/colors.scss';
+
+.button{
+    display:inline-block;
+    padding:0.55em 1.4em;
+    border:0.1em solid #FFFFFF;
+    margin:0 0.3em 0.3em 0;
+    border-radius:18px;
+    box-sizing: border-box;
+    text-decoration:none;
+    font-family:'Roboto',sans-serif;
+    font-weight:300;
+    color:#FFFFFF;
+    text-align:center;
+    transition: all 0.2s;
+    background-color: $brand-primary;
+    }
+    .button:hover{
+        background-color:$brand-dark-primary;
+        transition: 0.314s ease-in-out all;
+        cursor: pointer;
+    }
+    @media all and (max-width:30em){
+    .button{
+    display:block;
+    margin:0.4em auto;
+    }
+}

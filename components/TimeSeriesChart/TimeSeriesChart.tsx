@@ -5,14 +5,17 @@ import Checkbox from '../Checkbox/Checkbox';
 
 const TimeSeriesChart = (props: { data: Array<object>, controls: Array<object>, onToggleSeries: Function }) => (
     <div className={styles.chartContainer}>
-        <div className={styles.controls}>
-            {props.controls.map(control => (
-                <Checkbox 
-                    label={control.label}
-                    isChecked={control.isChecked}
-                    onClick={() => props.onToggleSeries(control.label)}
-                />
-            ))}
+        <div className={styles.controlsContainer}>
+            <h1> Sleep Quality Data 03/07-03/10 </h1>
+            <div className={styles.controls}>
+                {props.controls.map(control => (
+                    <Checkbox 
+                        label={control.label}
+                        isChecked={control.isChecked}
+                        onClick={() => props.onToggleSeries(control.label)}
+                    />
+                ))}
+            </div>
         </div>
         <ResponsiveLine
         data={props.data}

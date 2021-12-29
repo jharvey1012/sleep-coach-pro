@@ -5,6 +5,7 @@
     background-color: $brand-dark-primary;
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     ul {
         display: flex;
         flex-direction: row;

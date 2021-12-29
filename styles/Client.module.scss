@@ -1,4 +1,68 @@
+@import './colors.scss';
+
 .container {
     width: 100vw;
-    height: 90vh;
+    height: 65vh;
+}
+
+.clientBasicInfo {
+    padding: 1rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    -moz-box-shadow: 1px 2px 3px rgba(0,0,0,.14);
+    -webkit-box-shadow: 1px 2px 3px rgba(0,0,0,.14);
+    box-shadow: 1px 2px 3px rgba(0,0,0,.14);
+    margin-bottom: 1rem;
+    
+
+    .nameAndPhotoContainer {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+        text-align: center;
+
+        .avatar {
+            margin-right: 1rem;
+            height: 84px;
+            width: 84px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    }
+
+    .sleepScoreInfoContainer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 144px;
+        width: 144px;
+        background-color: $brand-primary;
+        color: $brand-light-primary;
+        border-radius: 50%;
+        text-align: center;;
+        margin-top: 1rem;;
+
+        h1,h4 {
+            margin-block-start: 0;
+            margin-block-start: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        h1 {
+            font-weight: bold;
+        }
+    }
+}
+
+.chartSelector {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 1.25rem;
 }
